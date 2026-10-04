@@ -1,0 +1,18 @@
+name: Android Manual APK Build
+
+# Manual only: GitHub -> Actions -> Android Manual APK Build -> Run workflow.
+# This is a thin wrapper that reuses android-debug-apk.yml, so the build steps
+# are defined in exactly one place.
+#
+# It uploads the APK as a workflow artifact. It does NOT create a tag or a
+# GitHub Release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build debug APK (manual)
+    uses: ./.github/workflows/android-debug-apk.yml

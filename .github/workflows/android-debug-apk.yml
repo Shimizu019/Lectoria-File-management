@@ -1,0 +1,77 @@
+name: Android Debug APK
+
+# Builds the Lectoria debug APK so it can be downloaded straight from the
+# Actions page. This never creates tags or GitHub Releases.
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+  # Lets android-release.yml reuse this build instead of duplicating it.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Matches the JDK the project is built with locally (AGP 8.7.3 needs 17+).
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Check Android platform 35 is available
+        run: |
+          if [ ! -d "${ANDROID_HOME}/platforms/android-35" ]; then
+            echo "Android platform 35 is missing, installing it..."
+            sdkmanager "platforms;android-35"
+          else
+            echo "Android platform 35 already installed."
+          fi
+
+      # local.properties is git-ignored, so the runner needs its own copy.
+      - name: Point the build at the Android SDK
+        run: echo "sdk.dir=${ANDROID_HOME}" > local.properties
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      # Runs first so a failing test stops the build before an APK is uploaded.
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Verify the APK was produced
+        run: |
+          test -f app/build/outputs/apk/debug/app-debug.apk
+          ls -lh app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload APK as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lectoria-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
