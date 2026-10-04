@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Only the classes/ subtree (files/classes/<Class>/<Subject>/<file>) is ever
+    shared, and only for the single file the user taps. Nothing else in the app's
+    storage can be reached through this provider.
+-->
+<paths>
+    <files-path
+        name="lectoria_class_files"
+        path="classes/" />
+</paths>

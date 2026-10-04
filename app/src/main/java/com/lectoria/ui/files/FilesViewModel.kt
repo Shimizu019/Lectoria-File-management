@@ -10,6 +10,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lectoria.data.model.LectureFile
 import com.lectoria.data.repository.LectoriaRepository
 import com.lectoria.data.storage.FileStorageManager
+import com.lectoria.util.FileOpenResult
+import com.lectoria.util.FileOpener
+import com.lectoria.util.errorMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,20 +46,40 @@ class FilesViewModel(
         _uiState.value = _uiState.value.copy(files = repository.files(className, subjectName))
     }
 
-    /** Copies the file behind [uri] into this subject folder. */
-    fun importFile(uri: Uri) {
+    /**
+     * Copies every file the user picked into this subject folder.
+     * Existing files are never overwritten: the storage layer numbers
+     * duplicates, e.g. a second "Lecture 01.pdf" becomes "Lecture 01 (2).pdf".
+     */
+    fun importFiles(uris: List<Uri>) {
+        if (uris.isEmpty()) return
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isImporting = true)
-            val imported = repository.importFile(uri, className, subjectName)
+
+            var saved = 0
+            var failed = 0
+            for (uri in uris) {
+                if (repository.importFile(uri, className, subjectName) != null) {
+                    saved++
+                } else {
+                    failed++
+                }
+            }
+
             _uiState.value = FilesUiState(
                 files = repository.files(className, subjectName),
-                message = if (imported != null) {
-                    "Saved ${imported.name}"
-                } else {
-                    "That file could not be saved"
-                }
+                message = importSummaryMessage(saved, failed)
             )
         }
+    }
+
+    /** Opens a file in another app, e.g. a PDF viewer. */
+    fun openFile(file: LectureFile): FileOpenResult {
+        val result = FileOpener.open(getApplication(), file)
+        result.errorMessage?.let { message ->
+            _uiState.value = _uiState.value.copy(message = message)
+        }
+        return result
     }
 
     fun deleteFile(fileName: String) {
@@ -77,4 +100,15 @@ class FilesViewModel(
             initializer { FilesViewModel(application, className, subjectName) }
         }
     }
+}
+
+/**
+ * Message shown after a batch import, for example "4 files saved".
+ * Returns null when there is nothing worth telling the user.
+ */
+internal fun importSummaryMessage(saved: Int, failed: Int): String? = when {
+    saved == 0 && failed == 0 -> null
+    saved == 0 -> "No files were saved"
+    failed == 0 -> if (saved == 1) "1 file saved" else "$saved files saved"
+    else -> "$saved of ${saved + failed} files saved"
 }

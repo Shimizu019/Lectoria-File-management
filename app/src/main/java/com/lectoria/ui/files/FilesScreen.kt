@@ -40,10 +40,11 @@ import com.lectoria.ui.components.FileItem
 import com.lectoria.util.Constants
 
 /**
- * Step 3 of the flow: the files of one subject, plus the button that imports a
- * file through the system picker.
+ * Step 3 of the flow: the files of one subject.
  *
- * Opening a file is intentionally left for a later stage.
+ * "Add file" opens the system picker with multi-select enabled, and tapping a
+ * file hands it to an installed app (PDF viewer, PowerPoint, Word, ...) through
+ * a FileProvider content uri.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,11 +63,11 @@ fun FilesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var filePendingDeletion by remember { mutableStateOf<String?>(null) }
 
-    // The picker returns a uri; Lectoria copies it into the subject folder.
+    // The picker returns every file the user ticked; Lectoria copies them all in.
     val picker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) viewModel.importFile(uri)
+        contract = ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris ->
+        viewModel.importFiles(uris)
     }
 
     LaunchedEffect(state.message) {
@@ -123,7 +124,7 @@ fun FilesScreen(
                 items(state.files, key = { it.name }) { lectureFile ->
                     FileItem(
                         file = lectureFile,
-                        onClick = { /* preview comes in a later stage */ },
+                        onClick = { viewModel.openFile(lectureFile) },
                         onDelete = { filePendingDeletion = lectureFile.name }
                     )
                 }

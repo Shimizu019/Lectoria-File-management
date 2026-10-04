@@ -25,8 +25,20 @@ user never has to grant access to the whole device.
 1. Open Lectoria
 2. Create class `BSIT 3-6`
 3. Open it and create subject `Web Systems`
-4. Tap **Add file** and pick a PDF / PPT / DOCX
-5. The file is copied into `Web Systems` and appears in the list
+4. Tap **Add file** and tick one or more PDF / PPT / DOCX files
+5. The files are copied into `Web Systems` and appear in the list
+6. Tap a file to open it in an installed app (PDF viewer, PowerPoint, Word, ...)
+
+Importing the same file name twice never overwrites: the second copy is saved as
+`Lecture 01 (2).pdf`.
+
+## Opening files
+
+Tapping a file hands it to whichever installed app can handle that type. Because the
+files live in app-private storage, Lectoria shares them through a `FileProvider`
+content uri scoped to the `files/classes` folder, and each intent grants read access
+to that one file only. If no app can open the type, Lectoria says so instead of
+crashing.
 
 ## Project structure
 
@@ -61,5 +73,6 @@ Requirements: JDK 17+, Android SDK with API 35 installed. Set your SDK location 
 
 ## Not built yet (by design)
 
-No AI, quizzes, document chat, OCR, cloud sync, accounts, database, notifications or
-file viewers. This stage is only the file-management foundation.
+No AI, quizzes, document chat, OCR, cloud sync, accounts, database, notifications,
+backup, search or share-to-Lectoria. Lectoria does not render documents itself: it
+opens them in the apps you already have installed.
