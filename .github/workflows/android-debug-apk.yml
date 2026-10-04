@@ -37,13 +37,14 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
+      # The hosted ubuntu runner already provides the Android SDK with ANDROID_HOME
+      # set and licences accepted, so no extra SDK setup action is needed.
       - name: Check Android platform 35 is available
         run: |
+          echo "ANDROID_HOME=${ANDROID_HOME}"
           if [ ! -d "${ANDROID_HOME}/platforms/android-35" ]; then
             echo "Android platform 35 is missing, installing it..."
+            yes | sdkmanager --licenses > /dev/null 2>&1 || true
             sdkmanager "platforms;android-35"
           else
             echo "Android platform 35 already installed."
