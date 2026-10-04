@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Lectoria</string>
+    <string name="action_add">Add</string>
+    <string name="action_back">Back</string>
+    <string name="empty_classes">No classes yet</string>
+    <string name="empty_classes_message">Create your first class to get started</string>
+    <string name="empty_subjects">No subjects yet</string>
+    <string name="empty_subjects_message">Create a new subject to get started</string>
+    <string name="empty_files">No files yet</string>
+    <string name="empty_files_message">Add files to this subject</string>
+    <string name="dialog_create_class_title">Create Class</string>
+    <string name="dialog_create_subject_title">Create Subject</string>
+    <string name="dialog_create_class_hint">Enter class name (e.g., BSIT 3-6)</string>
+    <string name="dialog_create_subject_hint">Enter subject name (e.g., Web Systems)</string>
+    <string name="dialog_rename_class_title">Rename Class</string>
+    <string name="dialog_rename_subject_title">Rename Subject</string>
+    <string name="dialog_rename_class_hint">Enter new class name</string>
+    <string name="dialog_rename_subject_hint">Enter new subject name</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_delete_title">Delete Class</string>
+    <string name="dialog_delete_message">Are you sure you want to delete this class? This action cannot be undone.</string>
+    <string name="dialog_delete_subject_title">Delete Subject</string>
+    <string name="dialog_delete_subject_message">Are you sure you want to delete this subject? This action cannot be undone.</string>
+    <string name="file_type_pdf">PDF</string>
+    <string name="file_type_doc">DOC</string>
+    <string name="file_type_ppt">PPT</string>
+    <string name="file_type_xls">XLS</string>
+    <string name="file_type_txt">TXT</string>
+    <string name="file_type_image">Image</string>
+    <string name="file_type_unknown">Unknown</string>
+</resources>

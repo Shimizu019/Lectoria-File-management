@@ -1,0 +1,1 @@
+# Keep default rules. Lectoria currently ships without code shrinking.
