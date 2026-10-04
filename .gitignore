@@ -8,6 +8,7 @@
 /captures
 .externalNativeBuild
 .cxx
+*.apk
 
 # Signing material - never commit these
 local.properties
