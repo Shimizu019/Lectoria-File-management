@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.lectoria.data.repository.LectoriaRepository
 import com.lectoria.data.storage.FileStorageManager
+import com.lectoria.util.FileUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,15 +50,15 @@ class ClassesViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun addClass(name: String) {
-        val trimmed = name.trim()
-        if (trimmed.isEmpty()) return
-        if (repository.createClass(trimmed)) refresh()
+        val safeName = FileUtils.sanitizeName(name)
+        if (safeName.isEmpty()) return
+        if (repository.createClass(safeName)) refresh()
     }
 
     fun renameClass(currentName: String, newName: String) {
-        val trimmed = newName.trim()
-        if (trimmed.isEmpty() || trimmed == currentName) return
-        if (repository.renameClass(currentName, trimmed)) refresh()
+        val safeName = FileUtils.sanitizeName(newName)
+        if (safeName.isEmpty() || safeName == currentName) return
+        if (repository.renameClass(currentName, safeName)) refresh()
     }
 
     fun deleteClass(name: String) {

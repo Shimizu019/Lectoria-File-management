@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lectoria.data.repository.LectoriaRepository
 import com.lectoria.data.storage.FileStorageManager
+import com.lectoria.util.FileUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,15 +51,15 @@ class SubjectsViewModel(
     }
 
     fun addSubject(name: String) {
-        val trimmed = name.trim()
-        if (trimmed.isEmpty()) return
-        if (repository.createSubject(className, trimmed)) refresh()
+        val safeName = FileUtils.sanitizeName(name)
+        if (safeName.isEmpty()) return
+        if (repository.createSubject(className, safeName)) refresh()
     }
 
     fun renameSubject(currentName: String, newName: String) {
-        val trimmed = newName.trim()
-        if (trimmed.isEmpty() || trimmed == currentName) return
-        if (repository.renameSubject(className, currentName, trimmed)) refresh()
+        val safeName = FileUtils.sanitizeName(newName)
+        if (safeName.isEmpty() || safeName == currentName) return
+        if (repository.renameSubject(className, currentName, safeName)) refresh()
     }
 
     fun deleteSubject(name: String) {

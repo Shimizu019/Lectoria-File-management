@@ -32,6 +32,18 @@ private fun NavHostController.toFiles(className: String, subjectName: String) {
 }
 
 /**
+ * Reads a folder name back out of the navigation arguments.
+ *
+ * Names are encoded when navigating so that spaces and other special characters
+ * survive the route. Decoding here makes the result correct whether or not the
+ * navigation library already decoded it, which keeps "BSIT 3-6" readable.
+ * Names are sanitised on input (see FileUtils.sanitizeName), so a literal "%"
+ * can never be mistaken for an escape sequence.
+ */
+private fun readNameArgument(value: String?): String =
+    value?.let { Uri.decode(it) }.orEmpty()
+
+/**
  * Classes -> Subjects -> Files.
  */
 @Composable
@@ -56,9 +68,9 @@ fun LectoriaNavGraph(
                 navArgument(LectoriaRoutes.ARG_CLASS_NAME) { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val className = backStackEntry.arguments
-                ?.getString(LectoriaRoutes.ARG_CLASS_NAME)
-                .orEmpty()
+            val className = readNameArgument(
+                backStackEntry.arguments?.getString(LectoriaRoutes.ARG_CLASS_NAME)
+            )
 
             SubjectsScreen(
                 className = className,
@@ -76,12 +88,12 @@ fun LectoriaNavGraph(
                 navArgument(LectoriaRoutes.ARG_SUBJECT_NAME) { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val className = backStackEntry.arguments
-                ?.getString(LectoriaRoutes.ARG_CLASS_NAME)
-                .orEmpty()
-            val subjectName = backStackEntry.arguments
-                ?.getString(LectoriaRoutes.ARG_SUBJECT_NAME)
-                .orEmpty()
+            val className = readNameArgument(
+                backStackEntry.arguments?.getString(LectoriaRoutes.ARG_CLASS_NAME)
+            )
+            val subjectName = readNameArgument(
+                backStackEntry.arguments?.getString(LectoriaRoutes.ARG_SUBJECT_NAME)
+            )
 
             FilesScreen(
                 className = className,

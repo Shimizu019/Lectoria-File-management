@@ -45,4 +45,28 @@ class FileUtilsTest {
     fun `uses only the last extension when there are several`() {
         assertEquals("GZ", FileUtils.typeLabel("handout.tar.gz"))
     }
+
+    @Test
+    fun `sanitizeName keeps ordinary academic names intact`() {
+        assertEquals("BSIT 3-6", FileUtils.sanitizeName("BSIT 3-6"))
+        assertEquals("Web Systems", FileUtils.sanitizeName("  Web Systems  "))
+        assertEquals("Database Management", FileUtils.sanitizeName("Database Management"))
+    }
+
+    @Test
+    fun `sanitizeName removes characters that would break folders or routes`() {
+        assertEquals("BSIT-3-6", FileUtils.sanitizeName("BSIT/3-6"))
+        assertEquals("50- off", FileUtils.sanitizeName("50% off"))
+        assertEquals("a-b", FileUtils.sanitizeName("a\\b"))
+    }
+
+    @Test
+    fun `sanitizeName returns empty for blank input so creation is refused`() {
+        assertEquals("", FileUtils.sanitizeName("   "))
+    }
+
+    @Test
+    fun `sanitizeName replaces each unsafe character rather than deleting it`() {
+        assertEquals("---", FileUtils.sanitizeName("///"))
+    }
 }

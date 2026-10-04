@@ -33,4 +33,16 @@ object FileUtils {
     private const val BYTES_IN_MB = 1024L * 1024L
     private const val BYTES_IN_GB = 1024L * 1024L * 1024L
     private const val FALLBACK_MIME_TYPE = "application/octet-stream"
+
+    /**
+     * Makes a typed name safe to use as a folder name and as a navigation argument.
+     *
+     * "/" would split the navigation route and crash, and "%" would corrupt URL
+     * decoding, so both are replaced with "-". Everything else is left alone so
+     * "BSIT 3-6" and "Web Systems" keep their spaces.
+     */
+    fun sanitizeName(rawName: String): String =
+        rawName.trim().replace(UNSAFE_NAME_CHARS, "-")
+
+    private val UNSAFE_NAME_CHARS = Regex("[/\\\\:%*?\"<>|]")
 }
